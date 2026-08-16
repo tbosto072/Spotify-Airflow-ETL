@@ -6,7 +6,8 @@
 # without having to reapprove access for the app every hour. OAuth handles this refresh automatically when you call current_user_recently_played().
 
 import spotipy
-import os 
+import os
+import pandas as pd
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -25,3 +26,18 @@ print(results.keys()) # Relevant key: 'items', results stores a list of play eve
 print(results['items'][0].keys()) # Relevant keys: 'track' and 'played_at', each play event has track data and datetime data 
 print(results['items'][0]['track'].keys()) # Relevant keys: 'album', 'artists', 'name': each track within a play event has this specific data
 
+track_name = results['items'][0]['track']['name']
+artist_name = results['items'][0]['track']['artists'][0]['name']
+played_at = results['items'][0]['played_at']
+
+rows = []
+for item in results['items']: #Add track data to rows array to turn into DataFrame
+    rows.append({
+        'track_name': item['track']['name'],
+        'artist_name': item['track']['artists'][0]['name'],
+        'played_at': item['played_at']
+    })
+
+df = pd.DataFrame(rows) #Create DataFrame for easier data viewing
+
+print(df)
