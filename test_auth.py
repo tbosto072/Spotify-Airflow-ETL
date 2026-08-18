@@ -8,17 +8,30 @@
 import spotipy
 import os
 import pandas as pd
+import sqlite3
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=os.getenv("SPOTIFY_CLIENT_ID"),
-    client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
+    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
     redirect_uri="http://127.0.0.1:8888/callback",
     scope="user-read-recently-played"
     ))
+
+conn = sqlite3.connect("spotify_recently_played.db") #Create SQLite database
+
+#Create 'plays' table
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS plays ( 
+        track_name TEXT,
+        artist_name TEXT,
+        played_at TEXT
+    )
+""")
+conn.commit()
 
 results = sp.current_user_recently_played(limit=15) # Grabs 15 most recently streamed songs and returns JSON output
 
