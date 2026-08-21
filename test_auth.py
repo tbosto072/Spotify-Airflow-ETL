@@ -33,11 +33,12 @@ conn.execute("""
 """)
 conn.commit()
 
-results = sp.current_user_recently_played(limit=15) # Grabs 15 most recently streamed songs and returns JSON output
+results = sp.current_user_recently_played(limit=25) # Grabs 25 most recently streamed songs and returns JSON output
 
 print(results.keys()) # Relevant key: 'items', results stores a list of play event items
 print(results['items'][0].keys()) # Relevant keys: 'track' and 'played_at', each play event has track data and datetime data 
 print(results['items'][0]['track'].keys()) # Relevant keys: 'album', 'artists', 'name': each track within a play event has this specific data
+print()
 
 track_name = results['items'][0]['track']['name']
 artist_name = results['items'][0]['track']['artists'][0]['name']
@@ -53,4 +54,25 @@ for item in results['items']: #Add track data to rows array to turn into DataFra
 
 df = pd.DataFrame(rows) #Create DataFrame for easier data viewing
 
-print(df)
+#print(df)
+
+existing = pd.read_sql("SELECT * FROM plays", conn) #Holds data currently stored inside plays table
+
+#Creates dataframe that displays false if the record isn't already saved inside table
+#Useful for comparing fetched data vs pushed data to database
+comparison = pd.DataFrame(
+    {
+        'played_at': df['played_at'],
+        'already_saved': df['played_at'].isin(existing['played_at'])
+    }
+)
+
+
+new_rows = df[~df['played_at'].isin(existing['played_at'])] #Only gets new song data from fetch
+print("New songs fetched: " + str(len(new_rows)))
+print()
+
+new_rows.to_sql("plays", conn, if_exists="append", index=False) #Dedup logic to prevent duplicate songs from being put into database
+
+result = pd.read_sql("SELECT * FROM plays", conn) #Print contents of plays table
+print(result)
