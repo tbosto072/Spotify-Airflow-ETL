@@ -33,7 +33,7 @@ conn.execute("""
 """)
 conn.commit()
 
-results = sp.current_user_recently_played(limit=25) # Grabs 25 most recently streamed songs and returns JSON output
+results = sp.current_user_recently_played(limit=50) # Grabs 25 most recently streamed songs and returns JSON output
 
 print(results.keys()) # Relevant key: 'items', results stores a list of play event items
 print(results['items'][0].keys()) # Relevant keys: 'track' and 'played_at', each play event has track data and datetime data 
