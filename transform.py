@@ -2,7 +2,7 @@ import pandas as pd
 
 #Takes raw JSON API results as a parameter
 #rather than fetching internally to keep data retrieval decoupled
-def transform_json(results):
+def transform_tracks(results):
     rows = []
     for item in results['items']:
         rows.append({
