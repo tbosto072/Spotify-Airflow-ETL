@@ -1,7 +1,8 @@
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError
 import os
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
@@ -12,6 +13,15 @@ def get_recent_tracks():
         redirect_uri="http://127.0.0.1:8888/callback",
         scope="user-read-recently-played"
     ))
-    results = sp.current_user_recently_played(limit=50)
-    return results
+
+    try: 
+        results = sp.current_user_recently_played(limit=50)
+        return results
+    except SpotifyOauthError:
+        print("Authorization failed: Check your credentials or re-authenticate.")
+        return None
+    except requests.exceptions.RequestException:
+        print("Network error while contacting Spotify.")
+        return None
+    
 

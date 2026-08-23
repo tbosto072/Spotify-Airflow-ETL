@@ -7,6 +7,12 @@ import sqlite3
 def run_pipeline():
     conn = sqlite3.connect("spotify_recently_played.db")
     results = get_recent_tracks()
+
+    #Prevents transform_tracks() from being called if extract API call failed
+    if results is None:
+        print("Pipeline stopped: failed to fetch data from Spotify.")
+        return 
+    
     df = transform_tracks(results)
     create_table(conn)
     load_tracks(df,conn)
