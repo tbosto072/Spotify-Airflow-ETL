@@ -36,6 +36,14 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Apache Airflow logs
+logs/
+airflow-*.log
+airflow-*.err
+airflow-*.out
+*.log
+config/
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
