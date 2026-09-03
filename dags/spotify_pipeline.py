@@ -2,6 +2,13 @@ from airflow.sdk import dag, task
 from datetime import datetime
 import sys 
 import sqlite3
+import pandas as pd
+
+sys.path.insert(0, '/opt/airflow/include')
+
+from extract import get_recent_tracks
+from transform import transform_tracks
+from load import create_table, load_tracks
 
 
 @dag(
@@ -14,16 +21,23 @@ def spotify_pipeline():
 
     @task
     def extract():
-        return 0
+        return get_recent_tracks()
     
     @task 
-    def transform():
-        return 0
-    
+    def transform(results):
+        df = transform_tracks(results)
+        return df.to_json()
+
     @task
-    def load():
-        return 0
-   
-    extract() >> transform() >> load()
+    def load(df):
+        conn = sqlite3.connect("/opt/airflow/database/spotify_recently_played.db")
+        df = pd.read_json(df)
+        create_table(conn)
+        load_tracks(df,conn)
+
+    results = extract()
+    df = transform(results)
+    load(df)
+
 
 spotify_pipeline()
