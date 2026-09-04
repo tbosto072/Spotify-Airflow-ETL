@@ -3,6 +3,7 @@ from datetime import datetime
 import sys 
 import sqlite3
 import pandas as pd
+from io import StringIO
 
 sys.path.insert(0, '/opt/airflow/include')
 
@@ -31,7 +32,7 @@ def spotify_pipeline():
     @task
     def load(df):
         conn = sqlite3.connect("/opt/airflow/database/spotify_recently_played.db")
-        df = pd.read_json(df)
+        df = pd.read_json(StringIO(df), convert_dates=False)
         create_table(conn)
         load_tracks(df,conn)
 
