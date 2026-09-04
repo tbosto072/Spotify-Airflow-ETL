@@ -5,7 +5,7 @@ import sqlite3
 
 #Run extract, transform, and load in sequence
 def run_pipeline():
-    conn = sqlite3.connect("spotify_recently_played.db")
+    conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "database", "spotify_recently_played.db"))
     results = get_recent_tracks()
 
     #Prevents transform_tracks() from being called if extract API call failed
