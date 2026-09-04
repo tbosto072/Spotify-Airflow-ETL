@@ -11,7 +11,8 @@ def get_recent_tracks():
         client_id=os.getenv("SPOTIPY_CLIENT_ID"),
         client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
         redirect_uri="http://127.0.0.1:8888/callback",
-        scope="user-read-recently-played"
+        scope="user-read-recently-played",
+        cache_path=os.path.join(os.path.dirname(__file__), ".cache")
     ))
 
     try: 
